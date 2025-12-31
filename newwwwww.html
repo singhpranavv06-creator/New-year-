@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy New Year Guggi ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        :root { --primary: #ff4d6d; --bg-pink: #fff5f7; }
+        body, html { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background: var(--bg-pink); height: 100vh; overflow: hidden; touch-action: manipulation; }
+
+        .screen {
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            height: 100vh; width: 100%; text-align: center; position: absolute; padding: 20px; box-sizing: border-box;
+        }
+        .active { display: flex; animation: fadeIn 0.8s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Timer */
+        .timer { display: flex; gap: 8px; margin: 20px 0; }
+        .time-box { background: white; padding: 10px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); min-width: 55px; }
+        .time-box span { display: block; font-size: 1.1rem; font-weight: 600; color: var(--primary); }
+
+        .btn-main {
+            background: var(--primary); color: white; border: none; padding: 15px 40px;
+            border-radius: 50px; cursor: pointer; font-size: 1.1rem; font-weight: 600; transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3); z-index: 10;
+        }
+
+        /* Celebration Screen */
+        #screen3 { background: #000; color: gold; overflow: hidden; }
+        .firework { position: absolute; width: 4px; height: 4px; border-radius: 50%; animation: explode 1s ease-out infinite; }
+        @keyframes explode { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(30); opacity: 0; } }
+
+        /* MESSY BRIBE SCREEN */
+        .messy-bribe { background: #fff1f1; }
+        .messy-text-1 { transform: rotate(-5deg); color: #d63384; font-size: 2rem; font-weight: 800; }
+        .bribe-input { 
+            padding: 12px; border: 2px solid var(--primary); border-radius: 15px; 
+            margin: 20px 0; width: 200px; text-align: center; font-size: 1.2rem;
+        }
+        .shaking-btn { animation: shake 0.5s infinite; background: #ff0055 !important; }
+        @keyframes shake {
+            0%, 100% { transform: translate(0,0); }
+            25% { transform: translate(2px, 2px); }
+            50% { transform: translate(-2px, -2px); }
+            75% { transform: translate(2px, -2px); }
+        }
+
+        /* Envelope & Letter */
+        .envelope-wrapper { position: relative; width: 280px; height: 160px; background: #ff4d6d; border-radius: 0 0 10px 10px; cursor: pointer; margin-top: 30px; }
+        .envelope-wrapper::before { content: ''; position: absolute; top: -80px; left: 0; border-left: 140px solid transparent; border-right: 140px solid transparent; border-bottom: 80px solid #ff4d6d; }
+
+        .letter-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 100;
+            display: none; flex-direction: column; padding: 40px 25px; box-sizing: border-box; overflow-y: auto;
+        }
+        .close-letter { position: fixed; top: 15px; right: 20px; font-size: 2.5rem; color: var(--primary); cursor: pointer; z-index: 101; font-weight: bold; }
+        
+        /* Heart Burst */
+        .heart-click { position: fixed; font-size: 24px; pointer-events: none; animation: heartFade 1s forwards; z-index: 999; }
+        @keyframes heartFade { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
+    </style>
+</head>
+<body onclick="createHeart(event)">
+
+    <div id="screen1" class="screen active">
+        <h1 style="font-size: 1.3rem;">Countdown to <span style="color:var(--primary)">2026</span> with Aadvii ❤️</h1>
+        <div class="timer">
+            <div class="time-box"><span id="days">00</span><label>D</label></div>
+            <div class="time-box"><span id="hours">00</span><label>H</label></div>
+            <div class="time-box"><span id="mins">00</span><label>M</label></div>
+            <div class="time-box"><span id="secs">00</span><label>S</label></div>
+        </div>
+        <button class="btn-main" onclick="showScreen(2)">Start My Surprise ✨</button>
+    </div>
+
+    <div id="screen2" class="screen">
+        <h1 style="font-family: 'Dancing Script'; font-size: 3rem; color: var(--primary);">Madam Ji Ready??</h1>
+        <p>You have no idea what's coming...</p>
+        <button class="btn-main" onclick="startCelebration()">Lesssgoo 🚀</button>
+    </div>
+
+    <div id="screen3" class="screen">
+        <h1 style="font-size: 3rem; text-shadow: 0 0 20px gold;">HAPPY NEW YEAR! 🎇</h1>
+        <div id="celebration-area"></div>
+        <button class="btn-main" style="margin-top: 50px;" onclick="showScreen(4)">Next Please ❤️</button>
+    </div>
+
+    <div id="screen4" class="screen messy-bribe">
+        <div class="messy-text-1">HOLD ON! ✋🛑</div>
+        <p style="padding: 0 20px;">Before the final message, you <b>HAVE</b> to send me your cute pics!<br>Enter our secret code to prove you'll do it: 😉</p>
+        <input type="number" id="passCode" class="bribe-input" placeholder="Enter Code...">
+        <br>
+        <button class="btn-main shaking-btn" onclick="checkCode()">NOW GO AHEAD 🏃‍♂️💨</button>
+    </div>
+
+    <div id="screen5" class="screen">
+        <h1 style="color: var(--primary); font-family: 'Dancing Script'; font-size: 2rem;">A Gift for my Senorita</h1>
+        <div class="envelope-wrapper" onclick="openLetter()"></div>
+        <p style="margin-top: 30px; font-size: 0.8rem; color: #888;">(Tap the envelope to open)</p>
+    </div>
+
+    <div id="letterOverlay" class="letter-overlay">
+        <span class="close-letter" onclick="closeLetter()">×</span>
+        <h2 style="font-family: 'Dancing Script'; color: var(--primary); font-size: 1.8rem;">HAPPY NEW YEAR GUGGI ❤️</h2>
+        <div style="font-size: 1rem; line-height: 1.6; color: #333; white-space: pre-wrap; text-align: left;">
+heyyyyy love it's been like a big 7 year from the first time I saw you.. it was too gud to spend this whole time waiting for you ...and finally it's WE uska v ab ho hi jyega 3 saal uske liye v bahutttt happpyyyy hu or kya ...with the start of this year I'm taking vow that I'll love you upto next year and again will take the same vow for next year and do it till eternity i gonna love you every year every month every day every hour every minute every second every milliseconds every microseconds every whatever.....
+
+the only new year resolutions I can take is to try not gonna hurt you even unintentionally....i wish ki our love flourish every single moment we'll enjoy this with fullest and Will never bore of this epic love story...new gen laila Majnu yk 😭....
+
+yaad to bahut aa rhi ho pr koi n even when you are not here your presence always tingles me 😋.... I'm imagining you imagining me yk 😭... missing you jor se hum to wha nhi h tere sath or pta nhi tere party me hum yaad aaye v ki nhi teko but aayenge hi nhi 😭..to ye le dher sara mera payar 🥰😚🤭💋🙈🫴🏻🫶🏻🫣😘😍🥳🫂🩷💘💝💖💗💓💞💕💌💟♥️❣️🫀🫁🩸👄🫦👀🫶🏻
+
+hope you will find this love of me whenever you remembers me ....or kya bolu yhi h happpyyyy neewww yearrrr senoritaaaaaa....chuha nikla bil se happy new year dil se hahahaha ... hso tum v .... iiiiiiiiiiiiiiiiii lovveeeeeeeeee youuuuuuuuuuuuuuu sooooooooooooo muchhhhhhhhhhhhh aadviiiiiiiiiiiiii okay and always will 💗🫶🏻💕
+        </div>
+        <div style="text-align: right; font-weight: 600; color: var(--primary); margin-top: 20px;">YOUR MUNCHKIN 🥰</div>
+    </div>
+
+    <script>
+        function showScreen(n) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('screen'+n).classList.add('active');
+        }
+
+        function checkCode() {
+            const code = document.getElementById('passCode').value;
+            if(code === '150607') {
+                showScreen(5);
+            } else {
+                alert("Wrong code! Think about the date... 😉");
+            }
+        }
+
+        function openLetter() {
+            document.getElementById('letterOverlay').style.display = 'flex';
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#ff4d6d', '#ffffff', '#ffd700'] });
+        }
+
+        function closeLetter() { document.getElementById('letterOverlay').style.display = 'none'; }
+
+        function createHeart(e) {
+            const heart = document.createElement('div');
+            heart.className = 'heart-click';
+            heart.innerHTML = '💖';
+            heart.style.left = (e.clientX || e.pageX) + 'px';
+            heart.style.top = (e.clientY || e.pageY) + 'px';
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 1000);
+        }
+
+        function startCelebration() {
+            showScreen(3);
+            const area = document.getElementById('celebration-area');
+            setInterval(() => {
+                let f = document.createElement('div');
+                f.className = 'firework';
+                f.style.left = Math.random() * 100 + 'vw';
+                f.style.top = Math.random() * 100 + 'vh';
+                f.style.background = `hsl(${Math.random()*360}, 100%, 50%)`;
+                area.appendChild(f);
+                setTimeout(() => f.remove(), 1000);
+            }, 300);
+        }
+
+        const target = new Date("Jan 1, 2026 00:00:00").getTime();
+        setInterval(() => {
+            const now = new Date().getTime();
+            const diff = target - now;
+            if(diff > 0) {
+                document.getElementById('days').innerText = Math.floor(diff/86400000);
+                document.getElementById('hours').innerText = Math.floor((diff%86400000)/3600000);
+                document.getElementById('mins').innerText = Math.floor((diff%3600000)/60000);
+                document.getElementById('secs').innerText = Math.floor((diff%60000)/1000);
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
